@@ -1,30 +1,26 @@
 #!/bin/bash
 
-set -e
-
 if [[ $EUID -ne 0 ]]; then
   echo "This script must be run as root!" >&2
   exit 1
 fi
-
-REPO_URL="https://github.com/Xisray/srv-toolkit"
 
 if ! command -v git &>/dev/null; then
   echo "Git not found. Installing..."
   apt update && apt install -y git
 fi
 
-repo_name=$(basename "$REPO_URL" .git)
+TARGET_DIR="/opt/srv-toolkit"
 
-if [[ -d "$repo_name" ]]; then
-  echo "Directory '$repo_name' already exists"
-  exit 1
+if [ -d "$TARGET_DIR/.git" ]; then
+  cd "$TARGET_DIR" || exit
+  git fetch origin main
+  git reset --hard origin/main
+else
+  rm -rf "$TARGET_DIR"
+  git clone https://github.com/Xisray/srv-toolkit.git "$TARGET_DIR"
 fi
 
-git clone "$REPO_URL"
+chmod -R +x "$TARGET_DIR"
 
-if [[ -f "$repo_name/install.sh" ]]; then
-  rm -f "$repo_name/install.sh"
-fi
-
-chmod -R +x "$repo_name"
+ln -sf "$TARGET_DIR/menu" /usr/local/bin/srv-menu
