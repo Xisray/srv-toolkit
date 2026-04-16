@@ -157,13 +157,16 @@ function show_ufw_menu() {
 
           read_or_cancel ports "Введите порт(ы)(80 или 80,443,2053 или диапазон 400-500)" || continue
 
-          if ! [[ $ports =~ ^([0-9]+|[0-9]+-[0-9]+)(,([0-9]+|[0-9]+-[0-9]+))*$ ]]; then
-            error "Не правильный формат порта/ов"
+          local raw_output
+          raw_output=$(normalize_range_list "$ports")
+
+          if [[ $? -ne 0 ]]; then
+            error "Неверный формат"
             show_pause
             continue
           fi
 
-          colored_print "Выберите протокол:\n1) TCP\n2) UDP\n3) BOTH\n(Нажмите Enter для отмены)"
+          colored_print "Выберите протокол (Нажмите Enter для отмены):\n1) TCP\n2) UDP\n3) BOTH"
           colored_read choice "$PROMPT_SYMBOL"
 
           case $choice in
@@ -181,8 +184,8 @@ function show_ufw_menu() {
           }
 
           echo "Результат:"
-          IFS=',' read -ra PORT_LIST <<<"$ports"
-          for port in "${PORT_LIST[@]}"; do
+          mapfile -t result < <(sort -u <<< "$raw_output")
+          for port in "${result[@]}"; do
             if [[ $port == *-* ]]; then
               IFS='-' read -r s e <<<"$port"
               apply_ufw_rule "${s}:${e}"
@@ -199,9 +202,19 @@ function show_ufw_menu() {
       4)
           is_ufw_enabled || continue
           clear
-          ufw status numbered | tail -n +5
-          read_or_cancel num "Введите НОМЕР правила" || continue
-          ask "Вы уверены, что хотите удалить правило #$num?" "n" && ufw --force delete "$num" ;;
+          ufw status numbered | tail -n +4
+          read_or_cancel rule_numbers "Введите номера правил" || continue
+          local raw_output
+          raw_output=$(normalize_range_list -e "$rule_numbers")
+          if [[ $? -ne 0 ]]; then
+            error "Неверный формат"
+            show_pause
+            continue
+          fi
+          mapfile -t result < <(sort -nur <<< "$raw_output")
+          for rule_number in "${result[@]}"; do
+            ufw --force delete "$rule_number"
+          done ;;
       5)
           is_ufw_enabled || continue
           clear

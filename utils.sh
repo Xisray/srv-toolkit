@@ -83,3 +83,52 @@ function read_port() {
     return 0
   done
 }
+
+normalize_range_list() {
+  local expand=false
+  local input=""
+
+  if [[ "$1" == "-e" ]]; then
+    expand=true
+    input="$2"
+  else
+    input="$1"
+  fi
+  # local pattern='^[0-9,[:space:]\-]+$'
+  local pattern='^([0-9]+(-[0-9]+)?)(,\s*[0-9]+(-[0-9]+)?)*$'
+  [[ ! "$input" =~ $pattern ]] && return 1
+
+  local -a tokens
+  IFS=', ' read -ra tokens <<< "$input"
+
+  if [[ "$expand" == true ]]; then
+    for item in "${tokens[@]}"; do
+      [[ -z "$item" ]] && continue
+      if [[ "$item" =~ ^([0-9]+)-([0-9]+)$ ]]; then
+        seq "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}"
+      else
+        echo "$item"
+      fi
+    done
+    return
+  fi
+
+  local -A covered
+  for item in "${tokens[@]}"; do
+    [[ -z "$item" ]] && continue
+    if [[ "$item" =~ ^([0-9]+)-([0-9]+)$ ]]; then
+      for n in $(seq "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}"); do
+        covered[$n]=1
+      done
+    fi
+  done
+
+  for item in "${tokens[@]}"; do
+    [[ -z "$item" ]] && continue
+    if [[ "$item" =~ ^([0-9]+)-([0-9]+)$ ]]; then
+      echo "$item"
+    else
+      [[ -z "${covered[$item]}" ]] && echo "$item"
+    fi
+  done
+}
