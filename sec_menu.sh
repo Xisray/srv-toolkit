@@ -356,7 +356,7 @@ function show_users_menu() {
           else
             error "Что-то пошло не так при создании пользователя '$username'"
             show_pause
-          fi
+          fi ;;
       3)
           show_menu_header "Пользователи"
           get_users -c -r | column
