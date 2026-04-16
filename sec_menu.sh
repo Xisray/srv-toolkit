@@ -202,7 +202,7 @@ function show_ufw_menu() {
       4)
           is_ufw_enabled || continue
           clear
-          ufw status numbered | tail -n +4
+          ufw status numbered | tail -n +5
           read_or_cancel rule_numbers "Введите номера правил" || continue
           local raw_output
           raw_output=$(normalize_range_list -e "$rule_numbers")

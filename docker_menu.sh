@@ -229,7 +229,7 @@ while true; do
           fi
         else
           clear
-          curl -fsSL https://get.docker.com | sh
+          bash <(curl -sSL https://get.docker.com)
         fi ;;
     2)
         if is_docker_running; then
