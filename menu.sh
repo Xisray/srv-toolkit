@@ -11,12 +11,12 @@ function show_menu() {
   show_separator
   show_center "Главная"
   show_separator
-  show_menu_item 1 "Обновить меню"
+  show_menu_item 1 "Администрирование"
+  show_menu_item 2 "Сетевые настройки"
+  show_menu_item 3 "Безопасность и Доступ"
+  show_menu_item 4 "Прокси и VPN"
   show_separator
-  show_menu_item 2 "Администрирование"
-  show_menu_item 3 "Сетевые настройки"
-  show_menu_item 4 "Безопасность и Доступ"
-  show_menu_item 5 "Прокси и VPN"
+  show_menu_item "X" "Обновить меню"
   show_separator
   show_center "Введите номер пункта или [0] для выхода"
   show_separator
@@ -27,7 +27,7 @@ while true; do
   read -r choice
 
   case $choice in
-    1)
+    X|x|Ч|ч)
         cd /opt/srv-toolkit || exit
         git fetch origin main &>/dev/null
         if git reset --hard origin/main > /dev/null; then
@@ -39,10 +39,10 @@ while true; do
           error "Ошибка обновления"
           show_pause
         fi ;;
-    2)  bash "$SCRIPT_DIR/admin_menu.sh" ;;
-    3)  bash "$SCRIPT_DIR/net_menu.sh" ;;
-    4)  bash "$SCRIPT_DIR/sec_menu.sh" ;;
-    5)  bash "$SCRIPT_DIR/vpn_menu.sh" ;;
+    1)  bash "$SCRIPT_DIR/admin_menu.sh" ;;
+    2)  bash "$SCRIPT_DIR/net_menu.sh" ;;
+    3)  bash "$SCRIPT_DIR/sec_menu.sh" ;;
+    4)  bash "$SCRIPT_DIR/vpn_menu.sh" ;;
     0)  break ;;
   esac
 done
