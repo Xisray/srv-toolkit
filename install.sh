@@ -23,4 +23,4 @@ fi
 
 chmod -R +x "$TARGET_DIR"
 
-ln -sf "$TARGET_DIR/menu" /usr/local/bin/srv-menu
+ln -sf "$TARGET_DIR/menu.sh" /usr/local/bin/srv-menu
