@@ -39,10 +39,10 @@ while true; do
           error "Ошибка обновления"
           show_pause
         fi
-    2)  ./$SCRIPT_DIR/admin_menu.sh ;;
-    3)  ./$SCRIPT_DIR/net_menu.sh ;;
-    4)  ./$SCRIPT_DIR/sec_menu.sh ;;
-    5)  ./$SCRIPT_DIR/vpn_menu.sh ;;
+    2)  bash "$SCRIPT_DIR/admin_menu.sh" ;;
+    3)  bash "$SCRIPT_DIR/net_menu.sh" ;;
+    4)  bash "$SCRIPT_DIR/sec_menu.sh" ;;
+    5)  bash "$SCRIPT_DIR/vpn_menu.sh" ;;
     0)  break ;;
   esac
 done
