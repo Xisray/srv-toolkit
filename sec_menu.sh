@@ -1,7 +1,11 @@
 #!/bin/bash
 
-source menu_base.sh
-source utils.sh
+REAL_PATH=$(readlink -f "$0")
+
+SCRIPT_DIR=$(dirname "$REAL_PATH")
+
+source "$SCRIPT_DIR/menu_base.sh"
+source "$SCRIPT_DIR/utils.sh"
 
 function show_menu_header() {
   local current_section="${1:-}"

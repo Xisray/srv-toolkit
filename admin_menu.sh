@@ -1,6 +1,10 @@
 #!/bin/bash
 
-source menu_base.sh
+REAL_PATH=$(readlink -f "$0")
+
+SCRIPT_DIR=$(dirname "$REAL_PATH")
+
+source "$SCRIPT_DIR/menu_base.sh"
 
 function show_menu() {
   clear
@@ -24,8 +28,8 @@ while true; do
     1)
         clear
         apt update && apt upgrade -y ;;
-    2)  ./docker_menu.sh ;;
-    3)  ./test_menu.sh ;;
+    2)  bash "$SCRIPT_DIR/docker_menu.sh" ;;
+    3)  bash "$SCRIPT_DIR/test_menu.sh" ;;
     0)  break ;;
   esac
 done

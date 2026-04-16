@@ -1,6 +1,10 @@
 #!/bin/bash
 
-source menu_base.sh
+REAL_PATH=$(readlink -f "$0")
+
+SCRIPT_DIR=$(dirname "$REAL_PATH")
+
+source "$SCRIPT_DIR/menu_base.sh"
 
 function is_docker_installed() {
   command -v docker &> /dev/null

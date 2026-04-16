@@ -1,6 +1,10 @@
 #!/bin/bash
 
-source msg.sh
+REAL_PATH=$(readlink -f "$0")
+
+SCRIPT_DIR=$(dirname "$REAL_PATH")
+
+source "$SCRIPT_DIR/msg.sh"
 
 declare -gA __used_strings=()
 declare -gA __used_ports=()

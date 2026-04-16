@@ -1,6 +1,10 @@
 #!/bin/bash
 
-source msg.sh
+REAL_PATH=$(readlink -f "$0")
+
+SCRIPT_DIR=$(dirname "$REAL_PATH")
+
+source "$SCRIPT_DIR/msg.sh"
 
 if [[ $EUID -ne 0 ]]; then
   error "This script must be run as root!"
