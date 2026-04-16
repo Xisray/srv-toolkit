@@ -7,7 +7,7 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
-REPO_URL=""
+REPO_URL="https://github.com/Xisray/srv-toolkit"
 
 if ! command -v git &>/dev/null; then
   echo "Git not found. Installing..."
