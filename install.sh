@@ -11,7 +11,7 @@ REPO_URL=""
 
 if ! command -v git &>/dev/null; then
   echo "Git not found. Installing..."
-  apt update && apt upgrade -y && apt install -y git
+  apt update && apt install -y git
 fi
 
 repo_name=$(basename "$REPO_URL" .git)
