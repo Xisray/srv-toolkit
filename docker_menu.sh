@@ -20,6 +20,7 @@ function is_container_running() {
 
 function remove_docker() {
   ! ask "Удалить docker?" && return
+  clear
   apt purge -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-ce-rootless-extras
   rm -rf /var/lib/docker /var/lib/containerd
   rm -f /etc/apt/sources.list.d/docker.sources /etc/apt/keyrings/docker.asc
@@ -239,7 +240,7 @@ while true; do
     3)  is_docker_running && show_monitoring_menu ;;
     4)  is_docker_running && show_manage_container_menu ;;
     5)  is_docker_running && show_clear_menu ;;
-    X|x|ч|Ч)  is_docker_running && remove_docker ;;
+    X|x|ч|Ч)  is_docker_installed && remove_docker ;;
     0) break ;;
   esac
 done

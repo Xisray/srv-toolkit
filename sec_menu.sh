@@ -163,15 +163,14 @@ function show_ufw_menu() {
             continue
           fi
 
-          colored_print "Выберите протокол:\n1) TCP\n2) UDP\n3) BOTH\n0) Отмена"
+          colored_print "Выберите протокол:\n1) TCP\n2) UDP\n3) BOTH\n(Нажмите Enter для отмены)"
           colored_read choice "$PROMPT_SYMBOL"
 
           case $choice in
             1) protos=("tcp") ;;
             2) protos=("udp") ;;
             3) protos=("tcp" "udp") ;;
-            0) continue ;;
-            *) error "Неверный выбор"; show_pause; continue ;;
+            *) continue ;;
           esac
 
           apply_ufw_rule() {
