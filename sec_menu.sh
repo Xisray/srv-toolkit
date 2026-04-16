@@ -220,7 +220,7 @@ function show_ssh_menu() {
             apt install -y openssh-server
           fi ;;
       2)
-          read_port port "Введите порт" "$(get_valid_port)"
+          read_port new_port "Введите порт" "$(get_valid_port)"
           local old_port=$(get_ssh_config "Port")
           [[ "$old_port" == "$new_port" ]] && continue
           set_ssh_config "Port" "$new_port"
