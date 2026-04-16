@@ -38,7 +38,7 @@ while true; do
         else
           error "Ошибка обновления"
           show_pause
-        fi
+        fi ;;
     2)  bash "$SCRIPT_DIR/admin_menu.sh" ;;
     3)  bash "$SCRIPT_DIR/net_menu.sh" ;;
     4)  bash "$SCRIPT_DIR/sec_menu.sh" ;;
