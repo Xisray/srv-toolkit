@@ -235,6 +235,7 @@ function show_ssh_menu() {
           if [[ "$normal_users_count" -eq 0 ]]; then
             error "В системе нет обычных пользователей. Отключение Root-логина заблокирует доступ!"
             show_pause
+            continue
           fi
         fi
         toggle_ssh_config "PermitRootLogin" ;;
@@ -245,6 +246,7 @@ function show_ssh_menu() {
             if [[ "$pubkey_auth_val" == "no" ]]; then
               error "Нельзя отключить вход по паролю, так как вход по SSH-ключам тоже выключен. Сначала включите вход по ключам, иначе вы потеряете доступ к серверу!"
               show_pause
+              continue
             fi
             local users_with_pubkey=0
             local permit_root="$(get_ssh_config "PermitRootLogin")"
@@ -261,6 +263,7 @@ function show_ssh_menu() {
             if [[ "$users_with_pubkey" -eq 0 ]]; then
               error "Невозможно отключить аутентификацию по паролю. В системе не найдено активных пользователей с настроенными SSH-ключами. Вы рискуете потерять доступ к серверу."
               show_pause
+              continue
             fi
           fi
           toggle_ssh_config "PasswordAuthentication" ;;
@@ -271,6 +274,7 @@ function show_ssh_menu() {
             if [[ "$pass_val" == "no" ]]; then
               error "Невозможно отключить аутентификацию по SSH-ключам, так как вход по паролю также запрещен. Отключение обоих методов приведет к полной потере доступа к серверу. Сначала включите PasswordAuthentication."
               show_pause
+              continue
             fi
           fi
           toggle_ssh_config "PubkeyAuthentication" ;;
