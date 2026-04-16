@@ -185,6 +185,7 @@ function show_ufw_menu() {
 }
 
 function show_ssh_menu() {
+  sed -i '/^[[:space:]]*[Ii]nclude/d' /etc/ssh/sshd_config
   while true; do
     show_menu_header "Настройки SSH"
 
