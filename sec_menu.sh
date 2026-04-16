@@ -138,7 +138,7 @@ function show_ufw_menu() {
       if is_ufw_enabled; then
         show_menu_item 4 "Удалить правило"
         show_menu_item 5 "Список правил"
-        show_menu_item 6 "$action_text"
+        show_menu_item 6 "Перезапустить"
       fi
       show_menu_item "X" "Удалить"
     fi
@@ -155,23 +155,48 @@ function show_ufw_menu() {
       2|3)
           [ "$choice" == "3" ] && action="allow" || action="deny"
 
-          read_or_cancel port "Введите порт" || continue
+          read_or_cancel ports "Введите порт(ы)(80 или 80,443,2053 или диапазон 400-500)" || continue
 
-          if ! is_valid_port "$port"; then
-            error "Вы ввели не правильный порт"
+          if ! [[ $ports =~ ^([0-9]+|[0-9]+-[0-9]+)(,([0-9]+|[0-9]+-[0-9]+))*$ ]]; then
+            error "Не правильный формат порта/ов"
             show_pause
             continue
           fi
 
-          colored_print "Выберите протокол для порта $port:"
-          colored_print "1) TCP\n2) UDP\n3) Оба (и TCP и UDP)\n0) Отмена"
+          colored_print "Выберите протокол:\n1) TCP\n2) UDP\n3) BOTH\n0) Отмена"
           colored_read choice "$PROMPT_SYMBOL"
 
           case $choice in
-            1) res=$(ufw $action "$port/tcp") ;;
-            2) res=$(ufw $action "$port/udp") ;;
-            3) res=$(ufw $action "$port") ;;
-          esac ;;
+            1) protos=("tcp") ;;
+            2) protos=("udp") ;;
+            3) protos=("tcp" "udp") ;;
+            0) continue ;;
+            *) error "Неверный выбор"; show_pause; continue ;;
+          esac
+
+          apply_ufw_rule() {
+            local port_expr="$1"
+            for p in "${protos[@]}"; do
+              ufw $action "${port_expr}/${p}"
+            done
+          }
+
+          echo "Результат:"
+          IFS=',' read -ra PORT_LIST <<<"$ports"
+          for port in "${PORT_LIST[@]}"; do
+            if [[ $port == *-* ]]; then
+              IFS='-' read -r s e <<<"$port"
+              apply_ufw_rule "${s}:${e}"
+              ufw status | grep -q "${s}:${e}" \
+                && [[ $action == "allow" ]] && echo "✓ ${s}-${e}" \
+                || [[ $action == "deny"  ]] && echo "✗ ${s}-${e}"
+            else
+              apply_ufw_rule "$port"
+              ufw status | grep -q "$port" \
+                && [[ $action == "allow" ]] && echo "✓ ${port}" \
+                || [[ $action == "deny"  ]] && echo "✗ ${port}"
+            fi
+          done ;;
       4)
           is_ufw_enabled || continue
           clear
@@ -232,8 +257,6 @@ function show_ssh_menu() {
           [[ "$old_port" == "$new_port" ]] && continue
           set_ssh_config "Port" "$new_port"
           if is_ufw_installed; then
-            echo "$new_port"
-            show_pause
             ufw allow "$new_port"/tcp >/dev/null
             ufw delete allow "$old_port"/tcp >/dev/null
           fi ;;
