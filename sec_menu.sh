@@ -135,9 +135,11 @@ function show_ufw_menu() {
       show_menu_item 1 "$action_text"
       show_menu_item 2 "Запретить порт"
       show_menu_item 3 "Разрешить порт"
-      show_menu_item 4 "Удалить правило"
-      show_menu_item 5 "Список правил"
-      is_ufw_enabled && show_menu_item 6 "$action_text"
+      if is_ufw_enabled; then
+        show_menu_item 4 "Удалить правило"
+        show_menu_item 5 "Список правил"
+        show_menu_item 6 "$action_text"
+      fi
       show_menu_item "X" "Удалить"
     fi
     show_menu_footer
@@ -171,10 +173,14 @@ function show_ufw_menu() {
             3) res=$(ufw $action "$port") ;;
           esac ;;
       4)
+          is_ufw_enabled || continue
+          clear
           ufw status numbered | tail -n +5
           read_or_cancel num "Введите НОМЕР правила" || continue
           ask "Вы уверены, что хотите удалить правило #$num?" "n" && ufw --force delete "$num" ;;
       5)
+          is_ufw_enabled || continue
+          clear
           ufw status numbered | tail -n +5
           show_pause ;;
       6)  is_ufw_enabled && ufw reload ;;
@@ -226,6 +232,8 @@ function show_ssh_menu() {
           [[ "$old_port" == "$new_port" ]] && continue
           set_ssh_config "Port" "$new_port"
           if is_ufw_installed; then
+            echo "$new_port"
+            show_pause
             ufw allow "$new_port"/tcp >/dev/null
             ufw delete allow "$old_port"/tcp >/dev/null
           fi ;;
