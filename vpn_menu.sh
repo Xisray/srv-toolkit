@@ -37,10 +37,22 @@ services:
     restart: unless-stopped
 EOF
   docker compose up -d
+  sleep 1
   while [ "$(docker inspect -f '{{.State.Running}}' 3xui_app 2>/dev/null)" != "true" ]; do
     sleep 1
   done
+  sleep 1
+
+  local username="$(gen_random_string)"
+  local password="$(gen_random_string)"
+  # local port=""
+  # local webBasePath="$(gen_random_string)"
+
+  docker exec -it 3xui_app /app/x-ui setting -username "$username" -password "$password" # -port "9234" -webBasePath "$webBasePath"
   colored_print "3X-UI установлен"
+  colored_print "Username: $username"
+  colored_print "Password: $password"
+  show_pause
   # apt install -y openssl jq sqlite3
 
   # output=$(docker exec -it 3xui_app x-ui stop)
