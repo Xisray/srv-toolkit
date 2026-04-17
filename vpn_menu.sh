@@ -5,6 +5,7 @@ REAL_PATH=$(readlink -f "$0")
 SCRIPT_DIR=$(dirname "$REAL_PATH")
 
 source "$SCRIPT_DIR/menu_base.sh"
+source "$SCRIPT_DIR/utils.sh"
 
 function is_docker_installed() {
   command -v docker &> /dev/null
@@ -17,8 +18,8 @@ function is_docker_running() {
 function show_xui_menu() {
   is_docker_installed || bash <(curl -sSL https://get.docker.com)
   is_docker_running || systemctl start docker
-  mkdir ~/panel
-  cd ~/panel || return
+  mkdir /root/panel
+  cd /root/panel || return
   cat > compose.yml << EOF # универсальный путь до сертификатов
 services:
   3xui:
@@ -26,8 +27,8 @@ services:
     container_name: 3xui_app
     # hostname: yourhostname <- optional
     volumes:
-      - \$PWD/db/:/etc/x-ui/
-      - \$PWD/cert/:/root/cert/
+      - /root/panel/db/:/etc/x-ui/
+      - /root/panel/cert/:/root/cert/
     environment:
       XRAY_VMESS_AEAD_FORCED: "false"
       XUI_ENABLE_FAIL2BAN: "true"
@@ -38,9 +39,24 @@ EOF
   docker compose up -d
   while [ "$(docker inspect -f '{{.State.Running}}' 3xui_app 2>/dev/null)" != "true" ]; do
     sleep 1
-    echo -e "Жду"
   done
-  docker exec -it 3xui_app /usr/local/x-ui/x-ui setting -username "remove" -password "remove"
+  colored_print "3X-UI установлен"
+  # apt install -y openssl jq sqlite3
+
+  # output=$(docker exec -it 3xui_app x-ui stop)
+
+  # shor=($(openssl rand -hex 8) $(openssl rand -hex 8) $(openssl rand -hex 8) $(openssl rand -hex 8) $(openssl rand -hex 8) $(openssl rand -hex 8) $(openssl rand -hex 8) $(openssl rand -hex 8))
+
+  # output=$(docker exec -it 3xui_app /app/bin/xray-linux-amd64 x25519)
+
+  # private_key=$(echo "$output" | grep "^PrivateKey:" | awk '{print $2}')
+  # public_key=$(echo "$output" | grep "^Password:" | awk '{print $2}')
+
+  # trojan_pass=$(gen_random_string 10)
+  # emoji_flag=$(LC_ALL=en_US.UTF-8 curl -s https://ipwho.is/ | jq -r '.flag.emoji')
+  # ts=$(date "+%s%3N")
+
+  # docker exec -it 3xui_app /app/x-ui setting -username "remove" -password "remove1" -port "9234" -webBasePath "xxaada"
 }
 
 function show_menu() {
